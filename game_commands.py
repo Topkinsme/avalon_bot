@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.ext import tasks
 from discord.ext.commands import Bot
 from discord.ext.commands import Greedy
+from discord.ext.commands.cooldowns import BucketType
 from discord import Interaction
 from discord.app_commands import AppCommandError
 from discord.ui import Select
@@ -86,7 +87,7 @@ class Game_Cmds(commands.Cog):
 
 
     @commands.hybrid_command()
-    async def join(self,ctx:commands.Context,mode:int=1):
+    async def join(self,ctx:commands.Context,mode:int=2):
         '''Use this command to create a lobby or join an existing lobby.'''
         if mode>5:
             await self.psender(ctx,"Invalid mode.")
@@ -169,6 +170,7 @@ class Game_Cmds(commands.Cog):
             
 
     @commands.hybrid_command()
+    @commands.cooldown(1,10,BucketType.user) 
     async def votestart(self,ctx:commands.Context):
         '''Use this to vote to start the game.'''
         if self.state>1:
@@ -190,6 +192,7 @@ class Game_Cmds(commands.Cog):
             await self.gamestart()
     
     @commands.hybrid_command()
+    @commands.cooldown(1,10,BucketType.user) 
     async def unvotestart(self,ctx:commands.Context):
         '''Use this to revoke your vote to start the game.'''
         if self.state>1:
@@ -291,10 +294,10 @@ class Game_Cmds(commands.Cog):
                 message="As a *Loyal Servant of Arthur*, you have no idea about who is on your team."
             elif player.role=="Minion of Mordred":
                 player.loyalty="Mordred"
-                message=f"As a *Minion of Mordred*, your entire team is {','.join(evils)}." + ("Mordred's identity is {mordred}" if mordred else "")
+                message=f"As a *Minion of Mordred*, your entire team is {','.join(evils)}." + (f"Mordred's identity is {mordred}" if mordred else "")
             elif player.role=="Assassin":
                 player.loyalty="Mordred"
-                message=f"As *Mordred's trusted assasin*, your entire team is {','.join(evils)}."  + ("Mordred's identity is {mordred}" if mordred else "")
+                message=f"As *Mordred's trusted assasin*, your entire team is {','.join(evils)}."  + (f"Mordred's identity is {mordred}" if mordred else "")
             elif player.role=="Merlin":
                 player.loyalty="Arthur"
                 message=f"As the wizard *Merlin*, your powers reveal to you that the minions of Mordred are {','.join(evils)}." +("However, you do not know who Mordred is." if mordred else "")
@@ -308,7 +311,7 @@ class Game_Cmds(commands.Cog):
                 message=f"As *Percival*, your powers tell you that among {shuffle[0]} and {shuffle[1]}, one is Merlin and another is Morgana. You're just not sure who is which."
             elif player.role=="Morgana":
                 player.loyalty="Mordred"
-                message=f"As *Morgana*, you appear as if you are Merlin to Percival. Your entire team is {','.join(evils)}." + ("Mordred's identity is {mordred}" if mordred else "")
+                message=f"As *Morgana*, you appear as if you are Merlin to Percival. Your entire team is {','.join(evils)}." + (f"Mordred's identity is {mordred}" if mordred else "")
             elif player.role=="Mordred":
                 player.loyalty="Mordred"
                 message=f"As a *Mordred* himself, Merlin has no idea about your Identity. Your entire team is {','.join(evils)}, and yourself."
